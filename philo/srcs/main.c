@@ -12,43 +12,79 @@
 
 #include "philo.h"
 
-int parse_arg(int argc, char *argv[], t_philo *philo)
+static void	*ft_thread(void *arg)
 {
-	if (philo->num_of_philo = ft_atoi(argv[1]) < 1);
-		return (-1);
-	if (philo->time_to_die = ft_atoi(argv[2]) < 1);
-		return (-1);
-	if (philo->time_to_eat = ft_atoi(argv[3]) < 1);
-		return (-1);
-	if (philo->time_to_sleep = ft_atoi(argv[4]) < 1);
-	 	return (-1);
+	t_philos	*philo;
 
-	if (argc == 6)
-		if (philo->num_dishes_eaten = ft_atoi(argv[5]) < 1);
-			return (-1);
-	return (1);
+	philo = (t_philos *)arg;
+	if (philo->id % 2 == 0)
+		ft_usleep(50);
+	while (philo->table->finish == 0)
+	{
+		ft_eat(philo);
+		if (philo->table->eaten / philo->table->num_of_philo
+			== philo->table->to_eat)
+			break ;
+		if (philo->table->finish == 1)
+			break ;
+		ft_sleep(philo);
+		if (philo->table->finish == 1)
+			break ;
+		ft_think(philo);
+		if (philo->table->finish == 1)
+			break ;
+	}
+	return (NULL);
 }
 
-int main(int argc, char *argv[])
+int	dinner_time(t_zeus *zeus)
 {
-	t_philo *philo;
-	int check;
+	int	i;
 
-	philo = malloc(sizeof(t_philo));
-	if (!philo)
+	if (init_philos(zeus) == -1)
 		return (-1);
-	if (argc == 5 || argc == 6)
-		 check = parse_arg(argc, argv, philo);
-
-	if (check > 0) 
+	zeus->table->start_dinner_time = actual_time();
+	i = -1;
+	while (++i < zeus->table->num_of_philo)
 	{
-		printf("num of philo = %ld\n", philo->num_of_philo);
-		printf("time to die = %ld\n", philo->time_to_die);
-		printf("time to eat = %ld\n", philo->time_to_eat);
-		printf("time to sleep = %ld\n", philo->time_to_sleep);
-		printf("num dishes eaten = %ld\n", philo->num_dishes_eaten);
+		zeus->philo[i].id = i + 1;
+		zeus->philo[i].table = zeus->table;
+		if (i == zeus->table->num_of_philo - 1)
+			zeus->philo[i].r_fork = zeus->philo[0].l_fork;
+		else
+			zeus->philo[i].r_fork = zeus->philo[i + 1].l_fork;
+		pthread_create(&zeus->philo[i].thread, NULL, ft_thread,
+			&zeus->philo[i]);
+		if (zeus->table->finish == 1)
+			break ;
 	}
-	else 
-		printf("wrong argument\n", philo->num_of_philo);
-	
+	i = -1;
+	while (++i < zeus->table->num_of_philo)
+		pthread_join(zeus->philo[i].thread, NULL);
+	return (0);
+}
+
+int	main(int argc, char *argv[])
+{
+	t_zeus	*zeus;
+	t_table	*table;
+
+	if (!(argc == 5 || argc == 6))
+		return (ft_exit("Wrong number of argument."));
+	table = malloc(sizeof(*table));
+	if (!table)
+		return (ft_exit("Malloc failled."));
+	memset(table, 0, sizeof(t_table));
+	if (init_table(argc, argv, table) == -1)
+		return (-1);
+	zeus = malloc(sizeof(*zeus));
+	if (!zeus)
+		return (ft_exit("Malloc failled."));
+	memset(zeus, 0, sizeof(t_zeus));
+	zeus->table = table;
+	pthread_mutex_init(&zeus->die, NULL);
+	pthread_create(&zeus->thread, NULL, is_dead, (void *)(zeus));
+	dinner_time(zeus);
+	ft_free_all(zeus);
+	return (0);
 }

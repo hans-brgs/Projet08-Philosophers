@@ -12,7 +12,6 @@
 
 #include "philo.h"
 
-
 static int	ft_isdigit(int c)
 {
 	if (c >= '0' && c <= '9')
@@ -20,7 +19,6 @@ static int	ft_isdigit(int c)
 	else
 		return (0);
 }
-
 
 static int	ft_isspace(int c)
 {
@@ -47,10 +45,18 @@ int	ft_atoi(const char *str)
 			sign = -1;
 		str++;
 	}
-	while (*str && ft_isdigit(*str))
+	while (*str)
 	{
+		if (ft_isdigit(*str) == 0)
+			return (0);
 		nbr = nbr * 10 + (*str - '0');
 		str++;
 	}
 	return ((int)(sign * nbr));
+}
+
+int	ft_exit(char *str)
+{
+	printf("%serror : %s%s\n", R, str, K);
+	return (-1);
 }
