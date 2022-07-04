@@ -41,7 +41,7 @@ void	*is_dead(void *arg)
 
 	zeus = (t_zeus *)arg;
 	wait_dinner_start(zeus);
-	ft_usleep(zeus->table->time_die - 10);
+	ft_usleep(zeus->table->time_die);
 	while (1)
 	{
 		i = -1;
@@ -51,8 +51,8 @@ void	*is_dead(void *arg)
 				> zeus->table->time_die)
 			{
 				pthread_mutex_lock(&zeus->die);
-				printf("%ld %d %s%s%s\n", ft_timestamp(&zeus->philo[i]),
-					zeus->philo[i].id, R, STATE_DIED, W);
+				printf("%ld %d %s\n", ft_timestamp(&zeus->philo[i]),
+					zeus->philo[i].id, STATE_DIED);
 				zeus->table->finish = 1;
 				pthread_mutex_unlock(&zeus->die);
 				return (NULL);
@@ -63,17 +63,25 @@ void	*is_dead(void *arg)
 }
 
 void	ft_eat(t_philos *philo)
-{
+{	
+	if (philo->table->eaten / philo->table->num_of_philo
+		== philo->table->to_eat)
+		return ;
 	pthread_mutex_lock(philo->l_fork);
-	printf("%ld %d %s%s%s\n", ft_timestamp(philo), philo->id, C, STATE_LFORK, W);
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_lock(philo->r_fork);
-	printf("%ld %d %s%s%s\n", ft_timestamp(philo), philo->id, C, STATE_RFORK, W);
-	printf("%ld %d %s%s%s\n", ft_timestamp(philo), philo->id, G, STATE_EAT, W);
-	philo->start_time_die = actual_time();
 	philo->table->wait = 1;
-	philo->table->eaten++;
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_LFORK);
+	if (!philo->r_fork)
+	{
+		ft_usleep(philo->table->time_die * 2);
+		return ;
+	}
+	pthread_mutex_lock(philo->r_fork);
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_RFORK);
+	philo->table->eaten += 1;
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_EAT);
+	philo->start_time_die = actual_time();
 	ft_usleep(philo->table->time_eat);
+	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
 }
 
@@ -82,7 +90,7 @@ void	ft_sleep(t_philos *philo)
 	long int	time;
 
 	time = 0;
-	printf("%ld %d %s%s%s\n", ft_timestamp(philo), philo->id, K, STATE_SLEEP, W);
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_SLEEP);
 	while (time < philo->table->time_sleep)
 	{
 		if (philo->table->finish == 1)
@@ -94,5 +102,5 @@ void	ft_sleep(t_philos *philo)
 
 void	ft_think(t_philos *philo)
 {
-	printf("%ld %d %s%s%s\n", ft_timestamp(philo), philo->id, P, STATE_THINK, W);
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_THINK);
 }

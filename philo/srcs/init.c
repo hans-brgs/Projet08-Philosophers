@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-static int	check_arg(t_table *table)
+static int	check_arg(int argc, t_table *table)
 {
 	if (table->num_of_philo < 1)
 		return (-1);
@@ -22,7 +22,7 @@ static int	check_arg(t_table *table)
 		return (-1);
 	if (table->time_sleep < 1)
 		return (-1);
-	if (table->to_eat == 0)
+	if (argc == 6 && table->to_eat < 1)
 		return (-1);
 	return (0);
 }
@@ -39,7 +39,7 @@ int	init_table(int argc, char **argv, t_table *table)
 		table->to_eat = ft_atoi(argv[5]);
 	else
 		table->to_eat = -1;
-	if (check_arg(table) == -1)
+	if (check_arg(argc, table) == -1)
 		return (ft_exit("Argument has wrong value."));
 	return (0);
 }
@@ -54,10 +54,13 @@ int	init_philos(t_zeus *zeus)
 	philo = malloc(sizeof(t_philos) * table->num_of_philo);
 	if (!philo)
 		return (ft_exit("Malloc failled."));
+	memset(philo, 0, sizeof(t_philos));
 	i = -1;
 	zeus->philo = philo;
 	while (++i < table->num_of_philo)
 	{
+		philo[i].id = i + 1;
+		philo[i].table = zeus->table;
 		philo[i].l_fork = malloc(sizeof(pthread_mutex_t));
 		if (!philo[i].l_fork)
 			return (ft_exit("Malloc failled."));

@@ -75,11 +75,7 @@ void		ft_sleep(t_philos *philo);
 void		*is_dead(void *arg);
 
 # define R "\033[0;31m"
-# define G "\033[0;32m"
-# define C "\033[0;36m"
-# define P "\033[0;35m"
 # define K "\033[0;30m"
-# define W "\033[0;37m"
 # define STATE_LFORK "has taken a fork"
 # define STATE_RFORK "has taken a fork"
 # define STATE_EAT "is eating"

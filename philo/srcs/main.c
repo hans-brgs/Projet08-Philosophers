@@ -47,14 +47,15 @@ int	dinner_time(t_zeus *zeus)
 	i = -1;
 	while (++i < zeus->table->num_of_philo)
 	{
-		zeus->philo[i].id = i + 1;
-		zeus->philo[i].table = zeus->table;
-		if (i == zeus->table->num_of_philo - 1)
+		if (zeus->table->num_of_philo == 1)
+			zeus->philo[i].r_fork = NULL;
+		else if (i == zeus->table->num_of_philo - 1)
 			zeus->philo[i].r_fork = zeus->philo[0].l_fork;
 		else
 			zeus->philo[i].r_fork = zeus->philo[i + 1].l_fork;
 		pthread_create(&zeus->philo[i].thread, NULL, ft_thread,
 			&zeus->philo[i]);
+		pthread_mutex_destroy(zeus->philo[i].l_fork);
 		if (zeus->table->finish == 1)
 			break ;
 	}
