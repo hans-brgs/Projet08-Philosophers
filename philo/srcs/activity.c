@@ -71,10 +71,7 @@ void	ft_eat(t_philos *philo)
 	philo->table->wait = 1;
 	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_LFORK);
 	if (!philo->r_fork)
-	{
-		ft_usleep(philo->table->time_die * 2);
 		return ;
-	}
 	pthread_mutex_lock(philo->r_fork);
 	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, STATE_RFORK);
 	philo->table->eaten += 1;

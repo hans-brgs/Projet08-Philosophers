@@ -30,7 +30,6 @@ typedef struct s_table
 	long int	time_die;
 	long int	time_eat;
 	long int	time_sleep;
-	long int	time_think;
 	long int	start_dinner_time;
 }	t_table;
 

@@ -85,6 +85,7 @@ int	main(int argc, char *argv[])
 	zeus->table = table;
 	pthread_mutex_init(&zeus->die, NULL);
 	pthread_create(&zeus->thread, NULL, is_dead, (void *)(zeus));
+	pthread_detach(zeus->thread);
 	dinner_time(zeus);
 	ft_free_all(zeus);
 	return (0);

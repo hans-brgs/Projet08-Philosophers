@@ -46,7 +46,6 @@ void	ft_free_all(t_zeus *zeus)
 {
 	int	i;
 
-	pthread_detach(zeus->thread);
 	pthread_mutex_destroy(&zeus->die);
 	i = -1;
 	while (++i < zeus->table->num_of_philo)
