@@ -19,18 +19,20 @@
 # include <unistd.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <errno.h>
 
 typedef struct s_table
 {
-	int			num_of_philo;
-	int			to_eat;
-	int			eaten;
-	int			finish;
-	int			wait;
-	long int	time_die;
-	long int	time_eat;
-	long int	time_sleep;
-	long int	start_dinner_time;
+	int				num_of_philo;
+	int				to_eat;
+	int				eaten;
+	int				finish;
+	int				wait;
+	long int		time_die;
+	long int		time_eat;
+	long int		time_sleep;
+	long int		start_dinner_time;
+	pthread_mutex_t	write;
 }	t_table;
 
 typedef struct s_philos
@@ -49,28 +51,31 @@ typedef struct s_zeus
 	t_table			*table;
 	t_philos		*philo;
 	pthread_t		thread;
-	pthread_mutex_t	die;
-
 }	t_zeus;
 
 //  utils_lib
 int			ft_atoi(const char *str);
 int			ft_exit(char *str);
+void		ft_free(t_zeus *zeus, int j);
+void		ft_free_all(t_zeus *zeus);
 
 // init
-int			init_table(int argc, char **argv, t_table *table);
+int			init_table(int argc, char **argv, t_zeus *zeus);
 int			init_philos(t_zeus *zeus);
 
 // utils_philos
-void		ft_usleep(long int time_in_ms);
-void		ft_free_all(t_zeus *zeus);
+void		ft_usleep(t_table *table, long int time_in_ms);
 long int	actual_time(void);
 long int	ft_timestamp(t_philos *philo);
+void		mutex_printf(t_philos *philo, char *str);
 
 // activity
 void		ft_eat(t_philos *philo);
 void		ft_think(t_philos *philo);
 void		ft_sleep(t_philos *philo);
+
+// threads
+void		*ft_thread(void *arg);
 void		*is_dead(void *arg);
 
 # define R "\033[0;31m"

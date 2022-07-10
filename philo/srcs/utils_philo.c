@@ -24,13 +24,13 @@ long int	actual_time(void)
 	return (time);
 }
 
-void	ft_usleep(long int time_in_ms)
+void	ft_usleep(t_table *table, long int time_in_ms)
 {
 	long int	start_time;
 
 	start_time = 0;
 	start_time = actual_time();
-	while ((actual_time() - start_time) < time_in_ms)
+	while ((actual_time() - start_time) < time_in_ms && table->finish == 0)
 		usleep(time_in_ms / 10);
 }
 
@@ -42,12 +42,19 @@ long int	ft_timestamp(t_philos *philo)
 	return (timestamp);
 }
 
+void	mutex_printf(t_philos *philo, char *str)
+{
+	pthread_mutex_lock(&philo->table->write);
+	printf("%ld %d %s\n", ft_timestamp(philo), philo->id, str);
+	pthread_mutex_unlock(&philo->table->write);
+}
+
 void	ft_free_all(t_zeus *zeus)
 {
 	int	i;
 
-	pthread_mutex_destroy(&zeus->die);
 	i = -1;
+	pthread_mutex_destroy(&zeus->table->write);
 	while (++i < zeus->table->num_of_philo)
 	{
 		pthread_mutex_destroy(zeus->philo[i].l_fork);

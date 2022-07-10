@@ -27,8 +27,11 @@ static int	check_arg(int argc, t_table *table)
 	return (0);
 }
 
-int	init_table(int argc, char **argv, t_table *table)
+static int	fill_table(int argc, char **argv, t_zeus *zeus)
 {
+	t_table	*table;
+
+	table = zeus->table;
 	table->num_of_philo = ft_atoi(argv[1]);
 	table->time_die = ft_atoi(argv[2]);
 	table->time_eat = ft_atoi(argv[3]);
@@ -40,7 +43,48 @@ int	init_table(int argc, char **argv, t_table *table)
 	else
 		table->to_eat = -1;
 	if (check_arg(argc, table) == -1)
-		return (ft_exit("Argument has wrong value."));
+	{
+		ft_free(zeus, 1);
+		return (ft_exit("Arg Error"));
+	}
+	return (0);
+}
+
+int	init_table(int argc, char **argv, t_zeus *zeus)
+{
+	zeus->table = malloc(sizeof(t_table));
+	if (!zeus->table)
+	{
+		free(zeus);
+		return (ft_exit("Malloc failled."));
+	}
+	memset(zeus->table, 0, sizeof(t_table));
+	if (fill_table(argc, argv, zeus) == -1)
+		return (-1);
+	pthread_mutex_init(&zeus->table->write, NULL);
+	return (0);
+}
+
+static int	fill_philos(t_zeus *zeus)
+{
+	int			i;
+	t_philos	*philo;
+
+	i = -1;
+	philo = zeus->philo;
+	while (++i < zeus->table->num_of_philo)
+	{
+		memset(&philo[i], 0, sizeof(t_philos));
+		philo[i].id = i + 1;
+		philo[i].table = zeus->table;
+		philo[i].l_fork = malloc(sizeof(pthread_mutex_t));
+		if (!philo[i].l_fork)
+		{
+			ft_free(zeus, 3);
+			return (ft_exit("Malloc failled."));
+		}
+		pthread_mutex_init(philo[i].l_fork, NULL);
+	}
 	return (0);
 }
 
@@ -53,18 +97,22 @@ int	init_philos(t_zeus *zeus)
 	table = zeus->table;
 	philo = malloc(sizeof(t_philos) * table->num_of_philo);
 	if (!philo)
-		return (ft_exit("Malloc failled."));
-	memset(philo, 0, sizeof(t_philos));
-	i = -1;
-	zeus->philo = philo;
-	while (++i < table->num_of_philo)
 	{
-		philo[i].id = i + 1;
-		philo[i].table = zeus->table;
-		philo[i].l_fork = malloc(sizeof(pthread_mutex_t));
-		if (!philo[i].l_fork)
-			return (ft_exit("Malloc failled."));
-		pthread_mutex_init(philo[i].l_fork, NULL);
+		ft_free(zeus, 2);
+		return (ft_exit("Malloc failled."));
+	}
+	zeus->philo = philo;
+	if (fill_philos(zeus) == -1)
+		return (-1);
+	i = -1;
+	while (++i < zeus->table->num_of_philo)
+	{
+		if (zeus->table->num_of_philo == 1)
+			philo[i].r_fork = NULL;
+		else if (i == zeus->table->num_of_philo - 1)
+			philo[i].r_fork = zeus->philo[0].l_fork;
+		else
+			philo[i].r_fork = zeus->philo[i + 1].l_fork;
 	}
 	return (0);
 }

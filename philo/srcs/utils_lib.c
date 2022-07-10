@@ -60,3 +60,25 @@ int	ft_exit(char *str)
 	printf("%serror : %s%s\n", R, str, K);
 	return (-1);
 }
+
+void	ft_free(t_zeus *zeus, int j)
+{
+	if (j == 1)
+	{
+		free(zeus->table);
+		free(zeus);
+	}
+	if (j == 2)
+	{
+		pthread_mutex_destroy(&zeus->table->write);
+		free(zeus->table);
+		free(zeus);
+	}
+	if (j == 3)
+	{
+		pthread_mutex_destroy(&zeus->table->write);
+		free(zeus->philo);
+		free(zeus->table);
+		free(zeus);
+	}
+}
