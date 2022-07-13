@@ -41,13 +41,6 @@ static int	check_death(t_zeus *zeus)
 	i = -1;
 	while (++i < zeus->table->num_of_philo)
 	{
-		if (zeus->table->eaten / zeus->table->num_of_philo
-			== zeus->table->to_eat)
-		{
-			pthread_mutex_lock(&zeus->table->write);
-			zeus->table->finish = 1;
-			return (1);
-		}
 		if (actual_time() - zeus->philo[i].start_time_die
 			>= zeus->table->time_die)
 		{
@@ -58,6 +51,12 @@ static int	check_death(t_zeus *zeus)
 			return (1);
 		}
 	}
+	if (zeus->table->eaten >= zeus->table->num_of_philo)
+	{
+		pthread_mutex_lock(&zeus->table->write);
+		zeus->table->finish = 1;
+		return (1);
+	}	
 	return (0);
 }
 
@@ -86,7 +85,7 @@ void	*ft_thread(void *arg)
 	while (philo->table->finish == 0)
 	{
 		ft_eat(philo);
-		if (philo->table->finish == 1)
+		if (philo->table->finish == 1 || philo->is_full == 1)
 			return (NULL);
 		ft_sleep(philo);
 		if (philo->table->finish == 1)

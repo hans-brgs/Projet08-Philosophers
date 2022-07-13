@@ -40,6 +40,8 @@ typedef struct s_philos
 	int				id;
 	int				is_dead;
 	long int		start_time_die;
+	int				eaten;
+	int				is_full;
 	t_table			*table;
 	pthread_t		thread;
 	pthread_mutex_t	*r_fork;

@@ -14,22 +14,28 @@
 
 void	ft_eat(t_philos *philo)
 {	
-	if (philo->table->eaten / philo->table->num_of_philo
-		== philo->table->to_eat)
-		return ;
 	pthread_mutex_lock(philo->l_fork);
 	philo->table->wait = 1;
 	mutex_printf(philo, STATE_RFORK);
 	if (!philo->r_fork)
+	{
+		pthread_mutex_unlock(philo->l_fork);
 		return ;
+	}
 	pthread_mutex_lock(philo->r_fork);
 	mutex_printf(philo, STATE_RFORK);
 	mutex_printf(philo, STATE_EAT);
 	philo->start_time_die = actual_time();
-	philo->table->eaten += 1;
+	philo->eaten += 1;
 	ft_usleep(philo->table, philo->table->time_eat);
 	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
+	if (philo->eaten == philo->table->to_eat)
+	{
+		philo->is_full = 1;
+		philo->table->eaten += 1;
+		return ;
+	}
 }
 
 void	ft_sleep(t_philos *philo)
