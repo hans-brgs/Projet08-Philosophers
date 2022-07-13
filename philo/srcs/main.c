@@ -28,7 +28,6 @@ int	dinner_time(t_zeus *zeus)
 			ft_free_all(zeus);
 			return (ft_exit("Thread failled"));
 		}
-		pthread_mutex_unlock(&zeus->table->write);
 		pthread_detach(zeus->philo[i].thread);
 	}
 	return (0);

@@ -56,7 +56,7 @@ static int	check_death(t_zeus *zeus)
 		pthread_mutex_lock(&zeus->table->write);
 		zeus->table->finish = 1;
 		return (1);
-	}	
+	}
 	return (0);
 }
 
@@ -84,6 +84,8 @@ void	*ft_thread(void *arg)
 		ft_usleep(philo->table, 50);
 	while (philo->table->finish == 0)
 	{
+		if (philo->table->finish == 1)
+			return (NULL);
 		ft_eat(philo);
 		if (philo->table->finish == 1 || philo->is_full == 1)
 			return (NULL);
