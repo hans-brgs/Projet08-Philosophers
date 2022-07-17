@@ -6,7 +6,7 @@
 #    By: hbourgeo <hbourgeo@student.19.be>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/15 07:55:41 by hbourgeo          #+#    #+#              #
-#    Updated: 2022/07/10 08:51:18 by hbourgeo         ###   ########.fr        #
+#    Updated: 2022/07/17 11:48:22 by hbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,8 +65,8 @@ re : fclean all
 print-%: ; @echo $* = $($*)
 
 # VALGRIND
-ARG1 = 1
-ARG2 = 810
+ARG1 = 2
+ARG2 = 2000
 ARG3 = 200
 ARG4 = 200
 ARG5 = 2
